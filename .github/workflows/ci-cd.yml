@@ -43,6 +43,11 @@ jobs:
           mvn -f carrito/pom.xml clean package -DskipTests
           mvn -f gestion-usuarios/pom.xml clean package -DskipTests
 
+      - name: Esperar a que MySQL esté listo
+        run: |
+          echo "Esperando 15 segundos para que MySQL esté listo..."
+          sleep 15
+
       - name: Ejecutar tests de microservicios
         run: |
           mvn -f core_negocio/pom.xml test
