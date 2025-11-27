@@ -41,13 +41,13 @@ jobs:
         run: |
           mvn -f core_negocio/pom.xml clean package -DskipTests
           mvn -f carrito/pom.xml clean package -DskipTests
-          mvn -f gestion_usuarios/pom.xml clean package -DskipTests
+          mvn -f gestion-usuarios/pom.xml clean package -DskipTests
 
       - name: Ejecutar tests de microservicios
         run: |
           mvn -f core_negocio/pom.xml test
           mvn -f carrito/pom.xml test
-          mvn -f gestion_usuarios/pom.xml test
+          mvn -f gestion-usuarios/pom.xml test
 
       - name: Construir imágenes Docker
         run: docker compose build
