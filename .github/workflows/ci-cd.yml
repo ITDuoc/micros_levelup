@@ -37,11 +37,57 @@ jobs:
           java-version: 17
           distribution: temurin
 
-      - name: Construir con Maven
-        run: mvn clean package -DskipTests
+      name: CI/CD Microservicios
 
-      - name: Ejecutar tests
-        run: mvn test
+      on:
+        push:
+          branches: [ test ]
+        pull_request:
+          branches: [ test ]
 
-      - name: Construir imágenes Docker
-        run: docker compose build
+      jobs:
+        build-and-test:
+          runs-on: ubuntu-latest
+
+          services:
+            mysql:
+              image: mysql:8.0
+              env:
+                MYSQL_ROOT_PASSWORD: 110321
+                MYSQL_DATABASE: mydatabase
+              options: >-
+                --health-cmd="mysqladmin ping -h mysql --silent"
+                --health-interval=10s
+                --health-timeout=5s
+                --health-retries=10
+
+          env:
+            SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
+            SPRING_DATASOURCE_USERNAME: root
+            SPRING_DATASOURCE_PASSWORD: 110321
+
+          steps:
+            - name: Clonar repositorio
+              uses: actions/checkout@v3
+
+            - name: Configurar JDK 17
+              uses: actions/setup-java@v3
+              with:
+                java-version: 17
+                distribution: temurin
+
+            - name: Construir microservicios con Maven
+              run: |
+                mvn -f core_negocio/pom.xml clean package -DskipTests
+                mvn -f carrito/pom.xml clean package -DskipTests
+                mvn -f gestion_usuarios/pom.xml clean package -DskipTests
+
+            - name: Ejecutar tests de microservicios
+              run: |
+                mvn -f core_negocio/pom.xml test
+                mvn -f carrito/pom.xml test
+                mvn -f gestion_usuarios/pom.xml test
+
+            - name: Construir imágenes Docker
+              run: docker compose build
+
