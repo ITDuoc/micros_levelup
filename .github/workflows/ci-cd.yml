@@ -12,10 +12,12 @@ jobs:
 
     services:
       mysql:
-        image: mysql:8.0
+        image:  mysql:8.0.33
         env:
           MYSQL_ROOT_PASSWORD: 110321
           MYSQL_DATABASE: mydatabase
+          WMYSQL_ALLOW_EMPTY_PASSWORD: "no"
+
         options: >-
           --health-cmd="mysqladmin ping -h mysql --silent"
           --health-interval=10s
@@ -37,20 +39,18 @@ jobs:
           java-version: 17
           distribution: temurin
 
-      - name: Esperar que MySQL esté listo (máx. 60s)
+      - name: Esperar a MySQL
         run: |
           echo "Esperando a que MySQL esté disponible..."
-          counter=0
-          until mysqladmin ping -h mysql --silent; do
-            counter=$((counter+5))
-            if [ $counter -ge 60 ]; then
-              echo "Error: MySQL no respondió en 60 segundos."
-              exit 1
+          for i in {1..20}; do
+            if mysqladmin ping -hmysql -uroot -p"$MYSQL_ROOT_PASSWORD" --silent; then
+              echo "¡MySQL está listo!"
+              break
             fi
-            echo "Esperando por MySQL..."
+            echo "Esperando por MySQL... ($i/20)"
             sleep 5
           done
-          echo "¡MySQL está listo!"
+
 
       - name: Construir microservicios con Maven
         run: |
