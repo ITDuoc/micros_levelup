@@ -37,6 +37,21 @@ jobs:
           java-version: 17
           distribution: temurin
 
+      - name: Esperar que MySQL esté listo (máx. 60s)
+        run: |
+          echo "Esperando a que MySQL esté disponible..."
+          counter=0
+          until mysqladmin ping -h mysql --silent; do
+            counter=$((counter+5))
+            if [ $counter -ge 60 ]; then
+              echo "Error: MySQL no respondió en 60 segundos."
+              exit 1
+            fi
+            echo "Esperando por MySQL..."
+            sleep 5
+          done
+          echo "¡MySQL está listo!"
+
       - name: Construir microservicios con Maven
         run: |
           mvn -f core_negocio/pom.xml clean package -DskipTests
