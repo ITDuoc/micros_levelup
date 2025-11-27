@@ -1,7 +1,9 @@
+version: "3.9"
+
 services:
 
   mysql:
-    image: mysql:8
+    image: mysql:8.0.33
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: 110321
@@ -10,36 +12,11 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    networks:
-      - micros_net
-
-  carrito:
-    build: ./carrito
-    container_name: carrito
-    ports:
-      - "8082:8080"
-    depends_on:
-      - mysql
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 110321
-    networks:
-      - micros_net
-
-  gestion_usuarios:
-    build: ./gestion-usuarios
-    container_name: gestion_usuarios
-    ports:
-      - "8083:8080"
-    depends_on:
-      - mysql
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 110321
-    networks:
-      - micros_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   core_negocio:
     build: ./core_negocio
@@ -47,16 +24,38 @@ services:
     ports:
       - "8081:8080"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 110321
-    networks:
-      - micros_net
+
+  carrito:
+    build: ./carrito
+    container_name: carrito
+    ports:
+      - "8082:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 110321
+
+  gestion_usuarios:
+    build: ./gestion-usuarios
+    container_name: gestion_usuarios
+    ports:
+      - "8083:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 110321
 
 volumes:
   mysql_data:
-
-networks:
-  micros_net:
