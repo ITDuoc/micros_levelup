@@ -12,17 +12,15 @@ jobs:
 
     services:
       mysql:
-        image:  mysql:8.0.33
+        image: mysql:8.0.33
         env:
           MYSQL_ROOT_PASSWORD: 110321
           MYSQL_DATABASE: mydatabase
-          WMYSQL_ALLOW_EMPTY_PASSWORD: "no"
-
         options: >-
-          --health-cmd="mysqladmin ping -h mysql --silent"
+          --health-cmd="mysqladmin ping -h mysql -uroot -p110321 --silent"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=10
+          --health-retries=20
 
     env:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
@@ -38,19 +36,6 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-
-      - name: Esperar a MySQL
-        run: |
-          echo "Esperando a que MySQL esté disponible..."
-          for i in {1..20}; do
-            if mysqladmin ping -hmysql -uroot -p"$MYSQL_ROOT_PASSWORD" --silent; then
-              echo "¡MySQL está listo!"
-              break
-            fi
-            echo "Esperando por MySQL... ($i/20)"
-            sleep 5
-          done
-
 
       - name: Construir microservicios con Maven
         run: |
