@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+
+  gestion_usuarios:
+    image: gestion_usuarios:local
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      GESTION_USERS_DB: ${GESTION_USERS_DB}
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  core_negocio:
+    image: core_negocio:local
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      CORE_DB: ${CORE_DB}
+    ports:
+      - target: 8081
+        published: 8081
+        protocol: tcp
+        mode: host
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  carrito:
+    image: carrito:local
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      CARRITO_DB: ${CARRITO_DB}
+    ports:
+      - target: 8082
+        published: 8082
+        protocol: tcp
+        mode: host
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure

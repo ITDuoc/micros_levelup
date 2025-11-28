@@ -1,10 +1,14 @@
 package com.itapia.gestion_usuarios.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "usuarios")
 public class UsuarioEntity {
     @Id
