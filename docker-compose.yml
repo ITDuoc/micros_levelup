@@ -22,7 +22,7 @@ services:
     build: ./core_negocio
     container_name: core_negocio
     ports:
-      - "8081:8080"
+      - "8081:8081"
     depends_on:
       mysql:
         condition: service_healthy
@@ -35,7 +35,7 @@ services:
     build: ./carrito
     container_name: carrito
     ports:
-      - "8082:8080"
+      - "8082:8082"
     depends_on:
       mysql:
         condition: service_healthy
@@ -48,7 +48,7 @@ services:
     build: ./gestion-usuarios
     container_name: gestion_usuarios
     ports:
-      - "8083:8080"
+      - "8083:8083"
     depends_on:
       mysql:
         condition: service_healthy

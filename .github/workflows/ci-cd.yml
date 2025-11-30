@@ -45,8 +45,8 @@ jobs:
 
       - name: Esperar a que MySQL esté listo
         run: |
-          echo "Esperando 15 segundos para que MySQL esté listo..."
-          sleep 15
+          echo "Esperando 10 segundos para que MySQL esté listo..."
+          sleep 10
 
       - name: Ejecutar tests de microservicios
         run: |
